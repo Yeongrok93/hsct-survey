@@ -166,7 +166,14 @@ function BasicContent() {
         </FieldWrap>
 
         <FieldWrap label="조혈모세포 이식일">
-          <input type="date" className="field-input max-w-xs" value={data.transplant_date ?? ""} onChange={(e) => set("transplant_date", e.target.value)} />
+          <input
+            type="date"
+            className="field-input max-w-xs"
+            value={data.transplant_date ?? ""}
+            onChange={(e) => set("transplant_date", e.target.value)}
+            onClick={(e) => e.currentTarget.showPicker?.()}
+            onFocus={(e) => e.currentTarget.showPicker?.()}
+          />
         </FieldWrap>
 
         <FieldWrap label="현재 동종조혈모세포이식은 몇 번째 이식인가요?">

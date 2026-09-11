@@ -28,7 +28,7 @@ function BehaviorContent() {
 
   const required: (keyof HealthBehavior)[] = [
     "smoke_past", "smoke_current", "alcohol_days", "vigorous_days", "moderate_days", "walk_days",
-    "sedentary_hours", "sedentary_minutes", "supplement_yn", "checkup_yn",
+    "sedentary_hours", "supplement_yn", "checkup_yn",
   ];
   const missing = required.filter((k) => data[k] === null);
 
@@ -87,8 +87,16 @@ function BehaviorContent() {
         </FieldWrap>
         <FieldWrap label="지난 7일 동안 앉아서 보낸 시간은 하루 평균 얼마입니까?">
           <div className="flex gap-3">
-            <NumberField value={data.sedentary_hours} onChange={(v) => set("sedentary_hours", v)} placeholder="시간" suffix="시간" />
-            <NumberField value={data.sedentary_minutes} onChange={(v) => set("sedentary_minutes", v)} placeholder="분" min={0} max={59} suffix="분" />
+            <NumberField
+              value={data.sedentary_hours}
+              onChange={(v) => {
+                set("sedentary_hours", v);
+                if (v !== null && data.sedentary_minutes === null) set("sedentary_minutes", 0);
+              }}
+              placeholder="시간"
+              suffix="시간"
+            />
+            <NumberField value={data.sedentary_minutes} onChange={(v) => set("sedentary_minutes", v)} placeholder="분 (선택, 기본 0)" min={0} max={59} suffix="분" />
           </div>
         </FieldWrap>
         <FieldWrap label="병원에서 처방받은 약물 이외에 복용 중인 건강보조식품이 있습니까?">
