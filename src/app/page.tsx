@@ -72,6 +72,10 @@ export default function StartPage() {
           아래에 연구담당자로부터 안내받은 <span className="font-semibold text-gray-700">참여자 코드</span>를 입력해
           주세요. 응답 도중 창을 닫으셔도 같은 코드로 다시 접속하시면 이어서 작성하실 수 있습니다.
         </p>
+
+        <p className="text-xs text-gray-400">
+          *본 연구는 서울아산병원 간호부의 승인을 받았습니다
+        </p>
       </div>
 
       <form onSubmit={handleStart} className="card space-y-4">
@@ -109,10 +113,6 @@ export default function StartPage() {
           {checking ? "확인 중..." : "설문 시작하기 →"}
         </button>
       </form>
-
-      <p className="text-xs text-gray-400 text-center">
-        *본 연구는 서울아산병원 간호부의 승인을 받았습니다
-      </p>
     </div>
   );
 }
