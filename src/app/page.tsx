@@ -109,6 +109,10 @@ export default function StartPage() {
           {checking ? "확인 중..." : "설문 시작하기 →"}
         </button>
       </form>
+
+      <p className="text-xs text-gray-400 text-center">
+        *본 연구는 서울아산병원 간호부의 승인을 받았습니다
+      </p>
     </div>
   );
 }
