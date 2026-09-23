@@ -51,7 +51,7 @@ function BasicContent() {
   }
 
   const required: (keyof BasicInfo)[] = [
-    "age_current", "age_transplant", "sex", "marital_status", "cohabitation", "religion", "education",
+    "age_current", "sex", "marital_status", "cohabitation", "religion", "education",
     "cost_burden", "occupation", "diagnosis", "diagnosis_year", "diagnosis_month", "transplant_date",
     "transplant_number", "donor_type", "graft_type", "dli_yn", "relapse", "target_therapy", "agvhd_ever", "cgvhd_ever",
   ];
@@ -94,10 +94,7 @@ function BasicContent() {
 
       <div className="card space-y-5">
         <FieldWrap label="나이">
-          <div className="flex flex-wrap gap-4">
-            <NumberField value={data.age_current} onChange={(v) => set("age_current", v)} placeholder="현재 만 나이" suffix="세 (현재)" />
-            <NumberField value={data.age_transplant} onChange={(v) => set("age_transplant", v)} placeholder="이식 당시 만 나이" suffix="세 (이식 당시)" />
-          </div>
+          <NumberField value={data.age_current} onChange={(v) => set("age_current", v)} placeholder="현재 만 나이" suffix="세 (현재)" />
         </FieldWrap>
 
         <FieldWrap label="성별">

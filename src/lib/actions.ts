@@ -72,6 +72,16 @@ async function setStep(code: string, step: string) {
 }
 
 export async function saveBasicInfo(code: string, data: BasicInfo): Promise<void> {
+  // 이식 당시 나이는 참여자가 직접 입력하면 헷갈려하는 경우가 많아 설문에서 제거하고,
+  // 현재 나이 + 이식일로부터 자동 계산한다 (2026-09 강영아 요청).
+  const computedAgeTransplant =
+    data.age_current !== null && data.transplant_date
+      ? Math.round(
+          data.age_current -
+            (Date.now() - new Date(data.transplant_date).getTime()) / (365.25 * 86400000)
+        )
+      : null;
+
   await sql`
     INSERT INTO basic_info (
       participant_id, age_current, age_transplant, sex, marital_status, cohabitation, cohabitation_other,
@@ -85,7 +95,7 @@ export async function saveBasicInfo(code: string, data: BasicInfo): Promise<void
       cgvhd_current_liver, cgvhd_current_lung, cgvhd_current_musculoskeletal, cgvhd_current_gu, cgvhd_current_other,
       updated_at
     ) VALUES (
-      ${code}, ${data.age_current}, ${data.age_transplant}, ${data.sex}, ${data.marital_status}, ${data.cohabitation}, ${data.cohabitation_other},
+      ${code}, ${data.age_current}, ${computedAgeTransplant}, ${data.sex}, ${data.marital_status}, ${data.cohabitation}, ${data.cohabitation_other},
       ${data.religion}, ${data.education}, ${data.cost_burden}, ${data.occupation}, ${data.diagnosis}, ${data.diagnosis_other}, ${data.diagnosis_year}, ${data.diagnosis_month},
       ${data.transplant_date}, ${data.transplant_number}, ${data.donor_type}, ${data.graft_type}, ${data.dli_yn}, ${data.relapse}, ${data.target_therapy},
       ${data.agvhd_ever}, ${data.agvhd_ever_skin}, ${data.agvhd_ever_liver}, ${data.agvhd_ever_gut},
@@ -97,7 +107,7 @@ export async function saveBasicInfo(code: string, data: BasicInfo): Promise<void
       NOW()
     )
     ON CONFLICT (participant_id) DO UPDATE SET
-      age_current = EXCLUDED.age_current, age_transplant = EXCLUDED.age_transplant, sex = EXCLUDED.sex,
+      age_current = EXCLUDED.age_current, age_transplant = COALESCE(EXCLUDED.age_transplant, basic_info.age_transplant), sex = EXCLUDED.sex,
       marital_status = EXCLUDED.marital_status, cohabitation = EXCLUDED.cohabitation, cohabitation_other = EXCLUDED.cohabitation_other,
       religion = EXCLUDED.religion, education = EXCLUDED.education, cost_burden = EXCLUDED.cost_burden, occupation = EXCLUDED.occupation,
       diagnosis = EXCLUDED.diagnosis, diagnosis_other = EXCLUDED.diagnosis_other, diagnosis_year = EXCLUDED.diagnosis_year, diagnosis_month = EXCLUDED.diagnosis_month,
