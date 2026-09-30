@@ -68,7 +68,8 @@ export async function getParticipantState(code: string): Promise<ParticipantStat
 }
 
 async function setStep(code: string, step: string) {
-  await sql`UPDATE participants SET current_step = ${step} WHERE participant_id = ${code}`;
+  // 완료 후 참여자가 이전 페이지로 돌아가 재제출하면 current_step이 역행할 수 있어, 이미 완료된 참여자는 건드리지 않는다.
+  await sql`UPDATE participants SET current_step = ${step} WHERE participant_id = ${code} AND is_complete = FALSE`;
 }
 
 export async function saveBasicInfo(code: string, data: BasicInfo): Promise<void> {
