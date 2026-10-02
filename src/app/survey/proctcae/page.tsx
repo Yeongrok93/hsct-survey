@@ -114,7 +114,17 @@ function SurveyContent() {
       });
       return next;
     });
-    if (checked) setErrorItemIds(new Set());
+    if (checked) {
+      setErrorItemIds(new Set());
+      // "모두 증상 없음"은 0점으로 즉시 저장 (이전에는 영역 이동 시점에만 저장되어 누락되는 경우가 있었음)
+      const rows: SymptomAnswerRow[] = [];
+      currentItems.forEach((item) => {
+        item.questions.forEach((qq) => {
+          rows.push({ itemId: item.id, questionKey: qq.key, optionSet: qq.optionSet, answerIndex: NO_SYMPTOM_INDEX[qq.optionSet] });
+        });
+      });
+      if (code && rows.length > 0) saveSymptomAnswers(code, rows).catch(console.error);
+    }
   }
 
   function getUnansweredItems(items: SurveyItem[]) {
@@ -172,6 +182,17 @@ function SurveyContent() {
     setSubmitting(true);
     try {
       await saveCurrentCategory();
+      // 안전장치: 제출 시 전체 영역의 응답을 한 번 더 저장해 누락을 방지
+      const allRows: SymptomAnswerRow[] = [];
+      SURVEY_ITEMS.forEach((item) => {
+        item.questions.forEach((qq) => {
+          const val = answers[buildAnswerKey(item.id, qq.key)];
+          if (!isUnanswered(val)) {
+            allRows.push({ itemId: item.id, questionKey: qq.key, optionSet: qq.optionSet, answerIndex: val as number });
+          }
+        });
+      });
+      if (allRows.length > 0) await saveSymptomAnswers(code, allRows);
       await saveOtherSymptoms(code, hasOtherSx, otherEntries);
       await completeSurvey(code);
       router.push(`/survey/complete?code=${encodeURIComponent(code)}`);
